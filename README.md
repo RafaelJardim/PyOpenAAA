@@ -142,7 +142,7 @@ If you want to create an user to access the database of this application instead
     mysql -u root -p
     
     # Create your new user replacing 'myuser' and 'mypassword'
-    CREATE USER 'myuser'@'%' IDENTIFIED BY PASSWORD 'mypassword';
+    CREATE USER 'myuser'@'%' IDENTIFIED BY 'mypassword';
 
     # Grant privileges replacing 'myuser' by your username
     GRANT ALL PRIVILEGES ON tacacs.* TO 'myuser'@'%' WITH GRANT OPTION;
