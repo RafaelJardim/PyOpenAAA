@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>PyOpenAAA by RafaelJardim</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">PyOpenAAA</h1>
+      <h2 class="project-tagline"></h2>
+      <a href="https://github.com/RafaelJardim/PyOpenAAA" class="btn">View on GitHub</a>
+      <a href="https://github.com/RafaelJardim/PyOpenAAA/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/RafaelJardim/PyOpenAAA/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="overview" class="anchor" href="#overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Overview</h1>
+
+<p>PyOpenAAA is an web system developed in Django to create basic configuration files for tac_plus software. With PyOpenAAA you will be able to control your management access through the AAA protocol TACACS+ in a small and medium size environment. That means you will know when an authorized user had access to a device and what configuration was performed. In addition will be able create groups of user and specify what command and parameters can be used by this group.</p>
+
+<p>If you need a solution for a large environment, it's recommend look for Cisco ACS 5.x or Cisco ISE 2.x products or use the tac_plus without this web system. </p>
+
+<h1>
+<a id="navigation" class="anchor" href="#navigation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Navigation</h1>
+
+<p><img src="https://github.com/RafaelJardim/PyOpenAAA/blob/master/static/tacacs/help/01.PNG?raw=true" alt=""></p>
+
+<ol>
+<li>Use this menu to navigate between options.</li>
+<li>Click this button to apply the changes configured.</li>
+<li>Click this button to display the help topics.</li>
+<li>Click this button to exit the system.</li>
+<li>This bar is displayed when the tac_plus process is not running.</li>
+<li>The selected content is displayed here.</li>
+</ol>
+
+<h1>
+<a id="device-configuration" class="anchor" href="#device-configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Device Configuration</h1>
+
+<p>The configuration depends on the manufacturer and model of the equipment. Below is the basic configuration for a device that uses Cisco IOS.</p>
+
+<pre><code>configure terminal
+!
+aaa new-model
+aaa authentication login default group tacacs+ local
+aaa authentication enable default group tacacs+ enable
+aaa authorization exec default group tacacs+ local none
+aaa authorization commands 1 default group tacacs+ local none
+aaa authorization commands 15 default group tacacs+ local none
+aaa authorization configuration default group tacacs+
+aaa accounting exec default start-stop group tacacs+
+aaa accounting commands 1 default start-stop group tacacs+
+aaa accounting commands 15 default start-stop group tacacs+
+!
+tacacs-server host {PyOpenAAA IP Address}
+tacacs-server key {PyOpenAAA pre-shared-key}
+</code></pre>
+
+<p>If you wants to authorize and account the privilege level 0 (includes the disable, enable, exit, help, and logout commands) you can add this configuration lines: </p>
+
+<pre><code>aaa authorization commands 0 default group tacacs+ local none
+aaa accounting commands 0 default start-stop group tacacs+
+</code></pre>
+
+<h1>
+<a id="users" class="anchor" href="#users" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Users</h1>
+
+<p>In this section you will manage users, passwords and define which group the user belongs to.</p>
+
+<p><img src="https://github.com/RafaelJardim/PyOpenAAA/blob/master/static/tacacs/help/02.PNG?raw=true" alt=""></p>
+
+<h2>
+<a id="create-user" class="anchor" href="#create-user" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Create User</h2>
+
+<p>To create a new user, just click on "Create New User" button and provide an unique username and a password. On creation time you must define which is the group of the user, previously created at Groups Menu. </p>
+
+<p><img src="https://github.com/RafaelJardim/PyOpenAAA/blob/master/static/tacacs/help/03.PNG?raw=true" alt=""></p>
+
+<h2>
+<a id="edit-user" class="anchor" href="#edit-user" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Edit User</h2>
+
+<p>Clicking on edit button of an user you can provide a new password, change the user group or both just clicking on Save button. If you don't wanna change nothing, click on Cancel button or navigate to other menu. </p>
+
+<p><img src="https://github.com/RafaelJardim/PyOpenAAA/blob/master/static/tacacs/help/04.PNG?raw=true" alt=""></p>
+
+<h2>
+<a id="delete-user" class="anchor" href="#delete-user" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Delete User</h2>
+
+<p>Click on delete button of an user to remove it. The logs of a deleted user will be maintained on database.</p>
+
+<h1>
+<a id="groups" class="anchor" href="#groups" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Groups</h1>
+
+<p>In this section you will manage the groups settings like privilege-level, time for disconnection by inactivity (idle-time),time for brute disconnection (time-out) and the Command-Set for an group. </p>
+
+<p><img src="https://github.com/RafaelJardim/PyOpenAAA/blob/master/static/tacacs/help/05.PNG?raw=true" alt=""></p>
+
+<h2>
+<a id="create-group" class="anchor" href="#create-group" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Create Group</h2>
+
+<p>To create a group, just click on "Create New Group" button and provide an unique Group Name, select an Command-set (previously created at Command-Sets menu), select a privilege-level On creation time you must define which is the group of the user, </p>
+
+<p><img src="https://github.com/RafaelJardim/PyOpenAAA/blob/master/static/tacacs/help/06.PNG?raw=true" alt=""></p>
+
+<blockquote>
+<p>By default, there are three privilege levels on the router:</p>
+
+<pre><code>   Privilege level 1 = non-privileged (prompt is router&gt;), the default level for logging in
+   Privilege level 15 = privileged (prompt is router#), the level after going into enable mode
+   Privilege level 0 = seldom used, but includes 5 commands: disable, enable, exit, help, and logout
+</code></pre>
+
+<p>Levels 2-14 are not used in a default configuration, but commands that are normally at level 15 can be moved down to one of those levels and commands that are normally at level 1 can be moved up to one of those levels. Obviously, this security model involves some administration on the router.</p>
+</blockquote>
+
+<p><a href="http://www.cisco.com/c/en/us/support/docs/security-vpn/remote-authentication-dial-user-service-radius/13860-PRIV.html">http://www.cisco.com/c/en/us/support/docs/security-vpn/remote-authentication-dial-user-service-radius/13860-PRIV.html</a></p>
+
+<h2>
+<a id="edit-group" class="anchor" href="#edit-group" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Edit Group</h2>
+
+<p>Clicking on edit button of a group you can change the command-set, the privilege-level and the timers of a group. Click on Save button to commit the changes. If you don't wanna change nothing, click on Cancel button or navigate to other menu. </p>
+
+<p><img src="https://github.com/RafaelJardim/PyOpenAAA/blob/master/static/tacacs/help/07.PNG?raw=true" alt=""></p>
+
+<h2>
+<a id="delete-group" class="anchor" href="#delete-group" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Delete Group</h2>
+
+<p>Clicking on Delete button of a group, you will not delete only the group but all members of this group. If you want to keep the members, change they to a valid group before delete the original group. </p>
+
+<h1>
+<a id="command-sets" class="anchor" href="#command-sets" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Command-Sets</h1>
+
+<p>In this section you will manage the Command-Sets and Default Permission of a command-set. </p>
+
+<p><img src="https://github.com/RafaelJardim/PyOpenAAA/blob/master/static/tacacs/help/08.PNG?raw=true" alt=""></p>
+
+<h2>
+<a id="create-command-set" class="anchor" href="#create-command-set" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Create Command-Set</h2>
+
+<p>To create a new command-set, just click on "Create New Command-Set" button and provide an unique Command-Set Name, select the default action (whats gonna happens when the user uses a command not specified), commands and parameters of this Command-Set. </p>
+
+<p><img src="https://github.com/RafaelJardim/PyOpenAAA/blob/master/static/tacacs/help/09.PNG?raw=true" alt=""></p>
+
+<p>The commands and parameters supports Regular expression. For sample if you want to permit or deny the show running-config and show startup-config, you can fill the command field with show and the parameter field with /^(running|startup)-config/.</p>
+
+<p>If you want to represents all variants of a commando, you must use .* on parameter. For sample if all copy parameters are allowed, you can fill command with copy and parameter with .* to represent all.</p>
+
+<p>The command-sets are read from top to bottom, like an ACL, so the order of a permission is important and you can manage this order drag and drop the double-arrow symbol at each command.</p>
+
+<p>For more informations, please check the documentation on tac_plus (<a href="http://www.pro-bono-publico.de/projects/tac_plus.html">http://www.pro-bono-publico.de/projects/tac_plus.html</a>)</p>
+
+<h2>
+<a id="edit-command-set" class="anchor" href="#edit-command-set" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Edit Command-Set</h2>
+
+<p>Clicking on edit button of a command-set you can change the default action (Unmatched Commands), commands, parameters and order of commands with drag and drop the double-arrow symbol at each command. Click on Save button to commit the changes. If you don't wanna change nothing, click on Cancel button or navigate to other menu. </p>
+
+<p><img src="https://github.com/RafaelJardim/PyOpenAAA/blob/master/static/tacacs/help/10.PNG?raw=true" alt=""></p>
+
+<h2>
+<a id="delete-command-set" class="anchor" href="#delete-command-set" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Delete Command-Set</h2>
+
+<p>Clicking on Delete button of a command-set, you will not delete only the command-set but all groups that use this command-set and users members of those groups. If you want to keep the groups, change the command-set to a valid one before delete the original command-set. </p>
+
+<h1>
+<a id="logs" class="anchor" href="#logs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Logs</h1>
+
+<p>In this section you show the access and the applied commands registered on database.</p>
+
+<h2>
+<a id="last-activity" class="anchor" href="#last-activity" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Last Activity</h2>
+
+<p>In this section you show the last 5 access registered on database for researches references. </p>
+
+<p><img src="https://github.com/RafaelJardim/PyOpenAAA/blob/master/static/tacacs/help/11.PNG?raw=true" alt=""></p>
+
+<h2>
+<a id="search" class="anchor" href="#search" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Search</h2>
+
+<p>Clicking on From and To fields you will able to provide a date interval to search access and commands registered. When these fields are filled you can click at Search button to view the correspondent records. </p>
+
+<p><img src="https://github.com/RafaelJardim/PyOpenAAA/blob/master/static/tacacs/help/12.PNG?raw=true" alt=""></p>
+
+<p>Clicking on View button of a record, you can see the commands used on that record. </p>
+
+<p><img src="https://github.com/RafaelJardim/PyOpenAAA/blob/master/static/tacacs/help/13.PNG?raw=true" alt=""></p>
+
+<h1>
+<a id="settings" class="anchor" href="#settings" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Settings</h1>
+
+<p>In this section you will manage the Settings of this application like the Pre Shared Key, Login Message, failure authentication Message and custom configurations writes from tac_plus documentation. Login and failure messages accepts \t for tabulation and \n for newline. </p>
+
+<p><img src="https://github.com/RafaelJardim/PyOpenAAA/blob/master/static/tacacs/help/14.PNG?raw=true" alt=""></p>
+
+<h1>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h1>
+
+<p>This product includes software developed by Marc Huber (<a href="mailto:Marc.Huber@web.de">Marc.Huber@web.de</a>) and Tacacs+ (tac_plus - <a href="http://www.pro-bono-publico.de/projects/tac_plus.html">http://www.pro-bono-publico.de/projects/tac_plus.html</a>) accounting log event parser (tac_parse - <a href="https://github.com/jathanism/tac_parse">https://github.com/jathanism/tac_parse</a>) </p>
+
+<h1>
+<a id="about-us" class="anchor" href="#about-us" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>About Us</h1>
+
+<h3>
+<a id="rafael-jardim-httpbrlinkedincominrjardim" class="anchor" href="#rafael-jardim-httpbrlinkedincominrjardim" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Rafael Jardim (<a href="http://br.linkedin.com/in/rjardim/">http://br.linkedin.com/in/rjardim/</a>)</h3>
+
+<p>I'm a Network Analyst from Brazil, I'm working with IT since 2011 and I like to create tools to optimize my work and I built this web system as personal project with help of my wife Laís. I have currently this certifications:</p>
+
+<ul>
+<li>Cisco CCNA 640-802 - R &amp; S</li>
+<li>Cisco CCNP 642-902 - ROUTE</li>
+<li>Cisco CCNP 642-813 - SWITCH</li>
+<li>Cisco CCNP 642-832 - TBSHOOT</li>
+<li>Cisco CCNA 640-554 - Security</li>
+<li>Cisco CCNP 300-208 - SISAS</li>
+<li>Huawei HCNA-HNTD H12-211</li>
+<li>CA Unified Infrastructure Management 8.x Implementation</li>
+</ul>
+
+<h3>
+<a id="laís-moutinho" class="anchor" href="#la%C3%ADs-moutinho" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Laís Moutinho</h3>
+
+<p>She is formed as Designer and specialized in Web User Interface. She helped me in this project with HTML, CSS, Javascript and this kind of stuffs. </p>
+
+<h3>
+<a id="you" class="anchor" href="#you" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>You</h3>
+
+<p>Thanks for use this web system. I hope this is good enough to help you on your environment. If you want to help, please let me know about any problem with device compatibility or bug on web system. </p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/RafaelJardim/PyOpenAAA">PyOpenAAA</a> is maintained by <a href="https://github.com/RafaelJardim">RafaelJardim</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
