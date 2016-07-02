@@ -17,7 +17,8 @@ You can install this pre-requiriments with the follow command:
     
     # On mysql-server package install, you must provide an root user password. Keep this password safe.
     apt-get install python3 python3-pip mysql-server nginx libmysqlclient-dev unzip
-    
+
+
 ## Instalation    
 
 ### tac_plus
@@ -110,11 +111,19 @@ The follow commands can be used with the "application user", root user or privil
     # Give execute permission to script responsable to start|stop|restart tac_plus system process
     chmod +x daemon.sh
 
+### Create DataBase
+
+The follow commands can be used with the "application user", root user or privileged user:
+
     # Create 'tacacs' database. 
-    # If you choose to create another user to access the database, replace 'root' paramenter on command.
     mysql -u root -p < tacacs.sql
 
-    cd ..
+    !!! You must edit the follow files to change the database username and password !!!
+
+    * /opt/django/pyopenaaa/PyOpenAAA/settings.py
+    * /opt/django/pyopenaaa/tacacs/mysql.py
+
+    cd /opt/django/pyopenaaa/
 
     # Integrate the database tacacs to Django
     python3 manage.py migrate
@@ -123,6 +132,27 @@ The follow commands can be used with the "application user", root user or privil
     # If you need to create another users after the system instalation, you can access http://PYOPENAAA URL/admin
     # to administrate the users
     python3 manage.py createsuperuser
+
+
+### Create DataBase User (Optional)
+
+If you want to create an user to access the database of this application instead of root user, use the follow commands:
+    
+    # Access the MySQL
+    mysql -u root -p
+    
+    # Create your new user replacing 'myuser' and 'mypassword'
+    CREATE USER 'myuser'@'%' IDENTIFIED BY PASSWORD 'mypassword';
+
+    # Grant privileges replacing 'myuser' by your username
+    GRANT ALL PRIVILEGES ON tacacs.* TO 'myuser'@'%' WITH GRANT OPTION;
+    
+    FLUSH PRIVILEGES;
+
+Edit the follow files to update the database username and password:
+
+    /opt/django/pyopenaaa/PyOpenAAA/settings.py
+    /opt/django/pyopenaaa/tacacs/mysql.py
 
 ## Starting PyOpenAAA
 
