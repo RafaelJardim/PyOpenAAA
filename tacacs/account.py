@@ -67,11 +67,11 @@ def parse_line(line, patterns=None):
     return None
 
 
-def import_to_database(acccount_file):
+def import_to_database(account_file):
 
     # Filter Lines by Login, Commands and Disconnections
 
-    f = open(acccount_file, 'r+')
+    f = open(account_file, 'r+')
 
     for line in f:
         a = parse_line(line)
@@ -91,7 +91,7 @@ def import_to_database(acccount_file):
                                a['av_pairs']['timezone'],
                                a['task_id']))
 
-            elif 'disc-cause' in a['av_pairs']:
+            elif 'disc-cause' and 'stop_time' in a['av_pairs']:
                 insert("""INSERT INTO access (tty, start_stop, timestamp, device_ip, username,
                 server_ip, service, timezone, task_id, `disc-cause`, stop_time, elapsed_time,
                 `pre-session-time`, `disc-cause-ext`)
@@ -110,6 +110,27 @@ def import_to_database(acccount_file):
                                a['av_pairs']['stop_time'],
                                a['av_pairs']['elapsed_time'],
                                a['av_pairs']['pre-session-time'],
+                               a['av_pairs']['disc-cause-ext']))
+
+            elif 'disc-cause' in a['av_pairs']:
+                insert("""INSERT INTO access (tty, start_stop, timestamp, device_ip, username,
+                server_ip, service, timezone, task_id, `disc-cause`, stop_time, elapsed_time,
+                `pre-session-time`, `disc-cause-ext`)
+                VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}',
+                '{8}', '{9}', '{10}', '{11}', '{12}', '{13}')"""
+                       .format(a['tty'],
+                               a['start_stop'],
+                               a['timestamp'],
+                               a['device_ip'],
+                               a['username'],
+                               a['server_ip'],
+                               a['av_pairs']['service'],
+                               a['av_pairs']['timezone'],
+                               a['task_id'],
+                               a['av_pairs']['disc-cause'],
+                               '',
+                               a['av_pairs']['elapsed_time'],
+                               '',
                                a['av_pairs']['disc-cause-ext']))
 
             elif 'cmd' in a['av_pairs']:
@@ -134,5 +155,5 @@ def import_to_database(acccount_file):
 
     # Clear account file
 
-    f = open(acccount_file, 'w')
+    f = open(account_file, 'w')
     f.close()
