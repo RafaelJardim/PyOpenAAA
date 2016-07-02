@@ -1,0 +1,67 @@
+{% extends 'tacacs/header.html' %}
+
+{% block content %}
+    <script>
+      function validateForm() {
+        var x = document.forms["create_group"]["idle_time"].value;
+        if (x == null || x == "") {
+            $('#error_message').html('<div id="empty_info" class="alert alert-danger alert-dismissible" role="alert">'+
+                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                'Group Idle-time for timeout must be filled.'+
+            '</div>');
+            return false;
+        }
+    }
+    </script>
+
+    <h1>Edit Group</h1>
+    <div id="error_message"></div>
+    <form name='create_group' style="max-width:600px" method="post" action="/tacacs/groups/groups.html" onsubmit="return validateForm()">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Group Name:</label>
+            <p class="form-control-static lead">{{ group_name }}</p>
+            <input type="hidden" name="group_id" value="{{ group_id }}"/>
+        </div>
+
+        <div class="form-group">
+            <label>Command-Set:</label>
+            <select name="cmd_set_id" class="form-control" title="Select the Command-Set for this New Group.">
+            {% for cmd_set_id , cmd_set_name in cmd_set_list %}
+                {% if cmd_set_id = sel_cmd_set_id  %}
+                    <option value="{{ cmd_set_id }}" selected>{{ cmd_set_name }}</option>
+                {% else %}
+                    <option value="{{ cmd_set_id }}">{{ cmd_set_name }}</option>
+                {% endif %}
+            {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Privilege Level:</label>
+                <select name="priv_lvl" class="form-control" title="Select Privilege Level of group.">
+                    {% for i in range %}
+                        {% if i = priv_lvl %}
+                            <option selected value="{{ i  }}">{{ i }}</option>
+                        {% else%}
+                            <option value="{{ i  }}">{{ i  }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+        </div>
+
+        <div class="form-group">
+            <label for="idle_time" >Idle Time:</label>
+            <input class="form-control" name="idle_time" id="idle_time" value="{{ idle_time }} ">
+        </div>
+
+        <div class="form-group">
+            <label for="timeout" >Idle Time:</label>
+            <input class="form-control" name="timeout" id="timeout" value="{{ timeout }} ">
+        </div>
+
+        <input type="hidden" name="job" value="save_group"/>
+        <input type="submit" class="btn btn-primary" value="Save">
+        <input type=button class="btn btn-default" onClick="parent.location='/tacacs/groups/groups.html'" value='Cancel'>
+    </form>
+{% endblock content %}

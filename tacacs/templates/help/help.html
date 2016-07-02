@@ -1,0 +1,366 @@
+{% extends 'tacacs/header.html' %}
+
+{% block content %}
+
+{% load staticfiles %}
+<style>
+    #overview, #help_summary { counter-reset: section; }
+
+    h2, ul ul { counter-reset: subsection; }
+
+    h2,h3{ padding-top:60px; }
+    h1+h2{ padding-top:0; }
+    ul{ list-style-type:none; }
+
+    h2:before, #help_summary > li:before { counter-increment: section; content: counter(section) ". "; }
+
+    h1+h2:before { content: ""; }
+
+    h3:before, #help_summary > li li:before { counter-increment: subsection; content: counter(section) "." counter(subsection) ". "; }
+
+    p,h4 { padding-top:10px; }
+</style>
+<h1>Help</h1>
+<h2>Summary</h2>
+<ul id="help_summary">
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#nav">Navigation</a></li>
+    <li><a href="#dev-conf">Device Configuration</a></li>
+    <li>
+        <a href="#users">Users</a>
+        <ul>
+            <li><a href="#create_user">Create User</a></li>
+            <li><a href="#edit_user">Edit User</a></li>
+            <li><a href="#delete_user">Delete User</a></li>
+        </ul>
+    </li>
+    <li>
+        <a href="#groups">Groups</a>
+        <ul>
+            <li><a href="#create_group">Create group</a></li>
+            <li><a href="#edit_group">Edit group</a></li>
+            <li><a href="#delete_group">Delete group</a></li>
+        </ul>
+    </li>
+    <li>
+        <a href="#command">Command-Sets</a>
+        <ul>
+            <li><a href="#create_command">Create command-set</a></li>
+            <li><a href="#edit_command">Edit command-set</a></li>
+            <li><a href="#delete_command">Delete command-set</a></li>
+        </ul>
+    </li>
+    <li>
+        <a href="#logs">Logs</a>
+        <ul>
+            <li><a href="#last_activity_log">Last Activity</a></li>
+            <li><a href="#search">Log Search</a></li>
+        </ul>
+    </li>
+    <li>
+        <a href="#settings">Settings</a>
+    </li>
+      <li>
+        <a href="#license">License</a>
+    </li>
+    <li>
+        <a href="#about_us">About Us</a>
+    </li>
+</ul>
+
+<h2 id="overview">Overview</h2>
+
+<p>
+    PyOpenAAA is an web system developed in Django to create basic configuration files for
+    <a href="http://www.pro-bono-publico.de/projects/tac_plus.html" target="_blank">tac_plus</a> software.
+    With PyOpenAAA you will be able to control your management access through the AAA protocol TACACS+ in a small and
+    medium size environment. That means you will know when an authorized user had access to a device and what
+    configuration was performed. In addition will be able create groups of user and specify what command and
+    parameters can be used by this group.
+</p>
+
+<p>
+    If you need a solution for a large environment, it's recommend look for Cisco ACS 5.x or Cisco ISE 2.x products
+    or use the tac_plus without this web system.
+</p>
+
+<h2 id="nav">Navigation</h2>
+
+<p>
+    <img alt="main-window" src="{% static 'tacacs/help/01.PNG' %}" style="border:1px solid #000; border-radius:5px;">
+</p>
+
+<p></p>
+<ol>
+    <li>Use this menu to navigate between options.</li>
+    <li>Click this button to apply the changes configured.</li>
+    <li>Click this button to display the help topics.</li>
+    <li>Click this button to exit the system.</li>
+    <li>This bar is displayed when the tac_plus process is not running.</li>
+    <li>The selected content is displayed here.</li>
+</ol>
+
+<h2 id="dev-conf">Device Configuration</h2>
+
+<p>
+    The configuration depends on the manufacturer and model of the equipment.
+    Below is the basic configuration for a device that uses Cisco IOS.
+</p>
+
+<pre>
+configure terminal
+!
+aaa new-model
+aaa authentication login default group tacacs+ local
+aaa authentication enable default group tacacs+ enable
+aaa authorization exec default group tacacs+ local none
+aaa authorization commands 1 default group tacacs+ local none
+aaa authorization commands 15 default group tacacs+ local none
+aaa authorization configuration default group tacacs+
+aaa accounting exec default start-stop group tacacs+
+aaa accounting commands 1 default start-stop group tacacs+
+aaa accounting commands 15 default start-stop group tacacs+
+!
+tacacs-server host {PyOpenAAA IP Address}
+tacacs-server key {PyOpenAAA pre-shared-key}
+</pre>
+
+<p>
+    If you wants to authorize and account the privilege level 0 (includes the disable,
+    enable, exit, help, and logout commands) you can add this configuration lines:
+</p>
+
+<pre>
+aaa authorization commands 0 default group tacacs+ local none
+aaa accounting commands 0 default start-stop group tacacs+
+</pre>
+
+<p>
+    It is strongly recommended the creation of an enable secret password and a local user with
+    admin privilege to cases of communication failure with the server.
+</p>
+
+<h2 id="users">Users</h2>
+
+<p>In this section you will manage users, passwords and define which group the user belongs to.</p>
+
+<p><img alt="user-view" src="{% static 'tacacs/help/02.PNG' %}" style="border:1px solid #000; border-radius:5px;"></p>
+
+<h3 id="create_user">Create User</h3>
+
+<p>
+    To create a new user, just click on "Create New User" button and provide an unique username and a password.
+    On creation time you must define which is the group of the user, previously created at Groups Menu.
+</p>
+
+<p><img alt="create_user" src="{% static 'tacacs/help/03.PNG' %}" style="border:1px solid #000; border-radius:5px;"></p>
+
+<h3 id="edit_user">Edit User</h3>
+
+<p>
+    Clicking on edit button of an user you can provide a new password, change the user group or both just
+    clicking on Save button. If you don't wanna change nothing, click on Cancel button or navigate to other menu.
+</p>
+
+<p><img alt="edit_user" src="{% static 'tacacs/help/04.PNG' %}" style="border:1px solid #000; border-radius:5px;"></p>
+
+<h3 id="delete_user">Delete User</h3>
+
+<p>
+    Click on delete button of an user to remove it. The logs of a deleted user will be maintained on database.
+</p>
+
+<h2 id="groups">Groups</h2>
+
+<p>
+    In this section you will manage the groups settings like privilege-level, time for disconnection by inactivity
+    (idle-time),time for brute disconnection (time-out) and the Command-Set for an group.
+</p>
+
+<p><img alt="groups" src="{% static 'tacacs/help/05.PNG' %}" style="border:1px solid #000; border-radius:5px;"></p>
+
+<h3 id="create_group">Create Group</h3>
+
+<p>
+    To create a group, just click on "Create New Group" button and provide an unique Group Name, select an Command-set
+    (previously created at Command-Sets menu), select a privilege-level    On creation time you must define which is
+    the group of the user,
+</p>
+
+<p><img alt="create_group" src="{% static 'tacacs/help/06.PNG' %}" style="border:1px solid #000; border-radius:5px;"></p>
+
+<blockquote style="font-size:14px;">
+    <p>
+        By default, there are three privilege levels on the router:
+    </p>
+        <ul>
+            <li>Privilege level 1 = non-privileged (prompt is router>), the default level for logging in</li>
+            <li>Privilege level 15 = privileged (prompt is router#), the level after going into enable mode</li>
+            <li>Privilege level 0 = seldom used, but includes 5 commands: disable, enable, exit, help, and logout</li>
+        </ul>
+    <p>
+        Levels 2-14 are not used in a default configuration, but commands that are normally at level 15 can be moved
+        down to one of those levels and commands that are normally at level 1 can be moved up to one of those levels.
+        Obviously, this security model involves some administration on the router.
+    </p>
+
+    <a href="http://www.cisco.com/c/en/us/support/docs/security-vpn/remote-authentication-dial-user-service-radius/13860-PRIV.html" target="_blank">Reference</a>
+
+</blockquote>
+
+<h3 id="edit_group">Edit Group</h3>
+
+<p>
+    Clicking on edit button of a group you can change the command-set, the privilege-level and the timers of a group.
+    Click on Save button to commit the changes. If you don't wanna change nothing, click on Cancel button or navigate
+    to other menu.
+</p>
+
+<p><img alt="edit_group" src="{% static 'tacacs/help/07.PNG' %}" style="border:1px solid #000; border-radius:5px;"></p>
+
+<h3 id="delete_group">Delete Group</h3>
+
+<p>
+    Clicking on Delete button of a group, you will not delete only the group but all members of this group.
+    If you want to keep the members, change they to a valid group before delete the original group.
+</p>
+
+<h2 id="command">Command-Sets</h2>
+
+<p>
+    In this section you will manage the Command-Sets and Default Permission of a command-set.
+</p>
+
+<p><img alt="command" src="{% static 'tacacs/help/08.PNG' %}" style="border:1px solid #000; border-radius:5px;"></p>
+
+<h3 id="create_command">Create Command-Set</h3>
+
+<p>
+    To create a new command-set, just click on "Create New Command-Set" button and provide an unique Command-Set Name,
+    select the default action (whats gonna happens when the user uses a command not specified), commands
+    and parameters of this Command-Set.
+</p>
+
+<p><img alt="create_command" src="{% static 'tacacs/help/09.PNG' %}" style="border:1px solid #000; border-radius:5px;"></p>
+
+<p>The commands and parameters supports Regular expression. For sample if you want to permit or deny the
+    <b><i>show running-config</i></b> and <b><i>show startup-config</i></b>, you can fill the command field with
+    <b><i>show</i></b> and the parameter field with <b><i>/^(running|startup)-config/</i></b>.
+</p>
+
+<p>
+    If you want to represents all variants of a commando, you must use <b>.*</b> on parameter. For sample if all copy
+    parameters are allowed, you can fill command with <b><i>copy</i></b> and parameter with <b>.*</b> to represent all.
+</p>
+
+<p>
+    The command-sets are read from top to bottom, like an ACL, so the order of a permission is important and you can
+    manage this order drag and drop the double-arrow symbol at each command.
+</p>
+
+
+<p>
+    For more informations, please check the documentation on
+    <a href="http://www.pro-bono-publico.de/projects/tac_plus.html" target="_blank">tac_plus</a>
+</p>
+
+<h3 id="edit_command">Edit Command-Set</h3>
+
+<p>
+    Clicking on edit button of a command-set you can change the default action (Unmatched Commands), commands,
+    parameters and order of commands with drag and drop the double-arrow symbol at each command. Click on Save button
+    to commit the changes. If you don't wanna change nothing, click on Cancel button or navigate
+    to other menu.
+</p>
+
+<p><img alt="edit_command" src="{% static 'tacacs/help/10.PNG' %}" style="border:1px solid #000; border-radius:5px;"></p>
+
+<h3 id="delete_command">Delete Command-Set</h3>
+
+<p>
+    Clicking on Delete button of a command-set, you will not delete only the command-set but all groups that use this
+    command-set and users members of those groups. If you want to keep the groups, change the command-set to a valid
+    one before delete the original command-set.
+</p>
+
+<h2 id="logs">Logs</h2>
+
+<p>
+    In this section you show the access and the applied commands registered on database.
+</p>
+
+<h3 id="last_activity_log">Last Activity</h3>
+
+<p>
+    In this section you show the last 5 access registered on database for researches references.
+</p>
+
+<p><img alt="logs" src="{% static 'tacacs/help/11.PNG' %}" style="border:1px solid #000; border-radius:5px;"></p>
+
+<h3 id="search">Search</h3>
+
+<p>
+    Clicking on From and To fields you will able to provide a date interval to search access and commands registered.
+    When these fields are filled you can click at Search button to view the correspondent records.
+</p>
+
+<p><img alt="logs_by_date" src="{% static 'tacacs/help/12.PNG' %}" style="border:1px solid #000; border-radius:5px;"></p>
+
+<p>
+    Clicking on View button of a record, you can see the commands used on that record.
+</p>
+
+<p><img alt="logs_detail" src="{% static 'tacacs/help/13.PNG' %}" style="border:1px solid #000; border-radius:5px;"></p>
+
+<h2 id="settings">Settings</h2>
+
+<p>
+    In this section you will manage the Settings of this application like the Pre Shared Key, Login Message, failure
+    authentication Message and custom configurations writes from tac_plus documentation.
+    Login and failure messages accepts <b>\t</b> for tabulation and <b>\n</b> for newline.
+</p>
+
+<p><img alt="settings" src="{% static 'tacacs/help/14.PNG' %}" style="border:1px solid #000; border-radius:5px;"></p>
+
+<h2 id="license">License</h2>
+
+<p>
+    This product includes software developed by Marc Huber (Marc.Huber@web.de) and Tacacs+ (tac_plus) accounting log
+    event parser <a href="https://github.com/jathanism/tac_parse" target="_blank">(tac_parse)</a>
+</p>
+
+<h2 id="about_us">About Us</h2>
+
+<h4><a href="http://br.linkedin.com/in/rjardim/" target="_blank">Rafael Jardim</a></h4>
+
+<p>
+    I'm a Network Analyst from Brazil, I'm working with IT since 2011 and I like to create tools to optimize my work and
+    I built this web system as personal project with help of my wife Laís. I have currently this certifications:
+</p>
+
+<ul style="list-style-type:disc;">
+    <li>Cisco CCNA 640-802 - R & S</li>
+    <li>Cisco CCNP 642-902 - ROUTE</li>
+    <li>Cisco CCNP 642-813 - SWITCH</li>
+    <li>Cisco CCNP 642-832 - TBSHOOT</li>
+    <li>Cisco CCNA 640-554 - Security</li>
+    <li>Cisco CCNP 300-208 - SISAS </li>
+    <li>Huawei HCNA-HNTD H12-211</li>
+    <li>CA Unified Infrastructure Management 8.x Implementation</li>
+</ul>
+
+<h4><a href="http://www.laismoutinho.com.br/portfolio/" target="_blank">Laís Moutinho</a></h4>
+
+
+<p>
+    She is formed as Designer and specialized in Web User Interface. She helped me in this project with HTML, CSS,
+    Javascript and this kind of stuffs.
+</p>
+
+<h4>You</h4>
+<p>
+    Thanks for use this web system. I hope this is good enough to help you on your environment. If you want to help,
+    please let me know about any problem with device compatibility or bug on web system.
+</p>
+</br></br></br>
+{% endblock content %}

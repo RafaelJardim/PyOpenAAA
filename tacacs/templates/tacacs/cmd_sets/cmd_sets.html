@@ -1,0 +1,47 @@
+{% extends 'tacacs/header.html' %}
+
+{% block content %}
+<h1>Command-Sets</h1>
+<a href="/tacacs/cmd_sets/create_cmd_set.html" class="btn btn-primary">
+<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Create New Command-Set</a>
+</br></br>
+<table class="table table-hover">
+    <thead>
+        <tr>
+              <th>Command Set Name</th>
+              <th>Default Action</th>
+              <th style='text-align:center'>Edit</th>
+              <th style='text-align:center'>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for cmd_set_name, cmd_default_action in cmd_set_list %}
+        <tr>
+            <td>{{ cmd_set_name }}</td>
+            <td>{{ cmd_default_action }}</td>
+            <td style='text-align:center'>
+                <form  method='post' action='/tacacs/cmd_sets/edit_cmd_set.html'>
+                    {% csrf_token %}
+                    <input type='hidden' name='job' value='edit_cmd_set'/>
+                    <input type='hidden' name='cmd_set_name' value='{{ cmd_set_name }}'/>
+                    <input type='hidden' name='cmd_default_action' value='{{ cmd_default_action }}'/>
+                    <button type="submit" class="btn btn-default" aria-label="Edit">
+                        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Edit
+                    </button>
+                </form>
+            </td>
+            <td style='text-align:center'>
+                <form  method='post' action='/tacacs/cmd_sets/cmd_sets.html'>
+                    {% csrf_token %}
+                    <input type='hidden' name='job' value='delete_cmd_set'/>
+                    <input type='hidden' name='cmd_set_name' value='{{ cmd_set_name }}'/>
+                    <button type="submit" class="btn btn-default" aria-label="Edit">
+                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
+                    </button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock content %}

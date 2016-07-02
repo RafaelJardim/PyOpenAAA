@@ -1,0 +1,59 @@
+{% extends 'tacacs/header.html' %}
+
+{% block content %}
+<script>
+    function validateForm() {
+        var x = document.forms["settings"]["tacacs_psk"].value;
+        if (x == null || x == "") {
+            $('#error_message').html('<div id="empty_info" class="alert alert-danger alert-dismissible" role="alert">'+
+            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+            'Pre-Shared Key must be filled.'+
+            '</div>');
+        return false;
+    }
+}
+</script>
+
+{% if status != "" %}
+
+    <div class="alert alert-info" role="alert">
+    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+    <span class="sr-only">Error</span>
+        Configuration Saved!
+    </div>
+
+{% endif %}
+
+
+<h1>Settings</h1>
+<div id="error_message"></div>
+<form name='settings' method="post" action="/tacacs/settings/settings.html" onsubmit="return validateForm()">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for='shared_key' >Tacacs Pre Shared Key:</label>
+        <input class="form-control" id='shared_key' name='shared_key' title="TACACS Pre-Shared-Key in clear text." value='{{ pre_shared_key }}'>
+    </div>
+
+    <div class="form-group">
+        <label for='login_msg'>Login Message:</label>
+        <input class="form-control" id='login_msg' name='login_msg' title="Terminal Login Message." value='{{ login_msg }}'>
+    </div>
+
+    <div class="form-group">
+        <label for='fail_msg'>Authentication Failed Message:</label>
+        <input class="form-control" id='fail_msg' name='fail_msg' title="Authentication Failed Message." value='{{ fail_msg }}'>
+    </div>
+
+    <div class="form-group">
+        <label>Custom Config:</label>
+        <textarea class="form-control" rows="5" name="custom_config">{{ custom_config }}</textarea>
+    </div>
+
+    <div class="form-group">
+        <input class="btn btn-primary" type="submit" value="Save">
+        <input class="btn btn-default" type=button onClick="parent.location='/index.html'" value='Cancel'>
+    </div>
+
+</form>
+
+{% endblock content %}

@@ -1,0 +1,46 @@
+{% extends 'tacacs/header.html' %}
+
+{% block content %}
+            <h1>Users</h1>
+            <a href="/tacacs/users/create_user.html" class="btn btn-primary">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Create New User</a>
+            <br/><br/>
+            <table class="table table-hover" cellspacing="0" cellpadding="0">
+                <thead>
+                    <tr>
+                          <th>Username</th>
+                          <th>Group</th>
+                          <th style='text-align:center'>Edit</th>
+                          <th style='text-align:center'>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user_id, user_name ,group_name in user_list %}
+                    <tr>
+                        <td style="vertical-align:middle">{{ user_name }}</td>
+                        <td style="vertical-align:middle">{{ group_name }}</td>
+                        <td style='text-align:center'>
+                            <form  method='post' action='/users/user.html'>
+                                {% csrf_token %}
+                                <input type='hidden' name='job' value='edit_user'/>
+                                <input type='hidden' name='user_id_edit' value='{{ user_id }}'/>
+                                <button type="submit" class="btn btn-default" aria-label="Edit">
+                                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Edit
+                                </button>
+                            </form>
+                        </td>
+                        <td style='text-align:center'>
+                            <form  method='post' action='/users/user.html'>
+                                {% csrf_token %}
+                                <input type='hidden' name='job' value='delete_user'/>
+                                <input type='hidden' name='user_id_del' value='{{ user_id }}'/>
+                                <button type="submit" class="btn btn-default" aria-label="Delete">
+                                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+{% endblock content %}

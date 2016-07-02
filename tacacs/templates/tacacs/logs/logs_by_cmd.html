@@ -1,0 +1,25 @@
+{% extends 'tacacs/header.html' %}
+
+{% block content %}
+
+<h1>Logs</h1>
+<table class="table table-hover">
+    <thead>
+        <th>Date</th>
+        <th>Timezone</th>
+        <th>Priv-Lvl</th>
+        <th>Command</th>
+    </thead>
+    <tbody>
+    {% for timestamp, timezone, priv_lvl, cmd in commands %}
+        <tr>
+            <td style="vertical-align:middle">{{ timestamp|date:"M, d, o, H:i:s" }}</td>
+            <td style="vertical-align:middle">{{ timezone }}</td>
+            <td style="vertical-align:middle">{{ priv_lvl }}</td>
+            <td style="vertical-align:middle">{{ cmd }}</td>
+        </tr>
+    </tbody>
+    {% endfor %}
+</table>
+
+{% endblock content %}

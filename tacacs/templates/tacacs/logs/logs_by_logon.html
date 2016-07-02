@@ -1,0 +1,43 @@
+{% extends 'tacacs/header.html' %}
+
+{% block content %}
+<h1>Logs</h1>
+<table class="table table-hover">
+    <thead>
+        <th>Login</th>
+        <th>Logout</th>
+        <th>Device IP</th>
+        <th>Source IP</th>
+        <th>Username</th>
+        <th>Terminal</th>
+        <th>Detail</th>
+    </thead>
+    <tbody>
+    {% for task, login, device_ip, source_ip, username, tty, logout in logon %}
+        <tr>
+            <td style="vertical-align:middle">{{ login|date:"M, d, o, H:i:s" }}</td>
+            <td style="vertical-align:middle">{{ logout|date:"M, d, o, H:i:s" }}</td>
+            <td style="vertical-align:middle">{{ device_ip }}</td>
+            <td style="vertical-align:middle">{{ source_ip }}</td>
+            <td style="vertical-align:middle">{{ username }}</td>
+            <td style="vertical-align:middle">{{ tty }}</td>
+            <td  style="vertical-align:middle">
+                <form method='post' action='/tacacs/logs/logs_by_cmd.html'>
+                    {% csrf_token %}
+                    <input type='hidden' name='login' value='{{ login|date:"o-m-d H:i:s" }}'/>
+                    <input type='hidden' name='logout' value='{{ logout|date:"o-m-d H:i:s" }}'/>
+                    <input type='hidden' name='device_ip' value='{{ device_ip }}'/>
+                    <input type='hidden' name='source_ip' value='{{ source_ip }}'/>
+                    <input type='hidden' name='username' value='{{ username }}'/>
+                    <input type='hidden' name='tty' value='{{ tty }}'/>
+                    <button type="submit" class="btn btn-default" aria-label="View">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span> View
+                    </button>
+                </form>
+            </td>
+        </tr>
+    </tbody>
+    {% endfor %}
+</table>
+
+{% endblock content %}

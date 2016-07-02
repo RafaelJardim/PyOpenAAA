@@ -1,0 +1,81 @@
+{% extends 'tacacs/header.html' %}
+{% load staticfiles %}
+{% block content %}
+<link href="{% static 'tacacs/jquery-ui/jquery-ui.min.css' %}" rel="stylesheet" />
+
+<h1>Logs</h1>
+</br>
+<h4>Last Activity </h4>
+<table class="table table-hover">
+    <thead>
+        <th>Login</th>
+        <th>Logout</th>
+        <th>Username</th>
+    </thead>
+    <tbody>
+    {% for login,  device_ip, source_ip, username, tty, task, logout in logon %}
+        <tr>
+            <td style="vertical-align:middle">{{ login|date:"M, d, o, H:i:s" }}</td>
+            <td style="vertical-align:middle">{{ logout|date:"M, d, o, H:i:s" }}</td>
+            <td style="vertical-align:middle">{{ username }}</td>
+        </tr>
+    </tbody>
+    {% endfor %}
+</table>
+<h4>Search</h4>
+<div id="error_message"></div>
+<form name='date_picker' class="form-inline" method='post' action="/tacacs/logs/logs_by_logon.html" onsubmit="return validateForm()">
+    {% csrf_token %}
+
+    <div class="form-group">
+        <label for="from_logon">From</label>
+        <input class="form-control" type="text" id="from_logon" name="from_logon">
+    </div>
+
+    <div class="form-group">
+        <label for="to_logon">to</label>
+        <input class="form-control" type="text" id="to_logon" name="to_logon">
+    </div>
+
+    <button type="submit" class="btn btn-default" aria-label="Search">
+        <span class="glyphicon glyphicon-search" aria-hidden="true"></span> Search
+    </button>
+
+</form>
+
+<script src="{% static 'tacacs/jquery-ui/jquery-ui.min.js' %}"></script>
+<script>
+    $( "#from_logon" ).datepicker({
+        dateFormat: "yy-mm-dd",
+        changeMonth: true,
+        changeYear: true,
+        onClose: function( selectedDate ) {
+            $( "#to_logon" ).datepicker( "option", "minDate", selectedDate );
+        }
+    });
+
+    $( "#to_logon" ).datepicker({
+        dateFormat: "yy-mm-dd",
+        changeMonth: true,
+        changeYear: true,
+        onClose: function( selectedDate ) {
+            $( "#from_logon" ).datepicker( "option", "maxDate", selectedDate );
+        }
+    });
+
+    function validateForm() {
+        var x = document.forms["date_picker"]["from_logon"].value;
+        var y = document.forms["date_picker"]["to_logon"].value;
+        if (x == null || x == "" || y == null || y == "" ) {
+            $('#error_message').html('<div id="empty_info" class="alert alert-danger alert-dismissible" role="alert">'+
+                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                'Date Interval must be filled.'+
+            '</div>');
+            return false;
+        }
+    }
+
+
+</script>
+
+{% endblock content %}

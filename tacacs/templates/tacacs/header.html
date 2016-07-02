@@ -1,0 +1,80 @@
+<!doctype html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>PyOpenAAA</title>
+        {% load staticfiles %}
+        <link type="text/css" rel="stylesheet" href="{% static 'tacacs/css/bootstrap.min.css' %}"/>
+        <link type="image/x-icon" rel="icon" href="{% static 'tacacs/img/favicon.ico' %}" />
+        <script type="text/javascript" src="{% static 'tacacs/js/jquery.js' %}"></script>
+        <script type="text/javascript" src="{% static 'tacacs/js/bootstrap.min.js' %}"></script>
+    </head>
+    <body>
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="../../index.html">
+                        <img alt="Brand" src="{% static 'tacacs/img/PyOpenAAA.png' %}" style="height:30px; margin-top:-5px">
+                    </a>
+                <div class="pull-right">
+                    <button class="btn btn-default navbar-btn" data-toggle="modal" data-target="#myModal">Apply</button>
+                    <a href="/help" class="btn btn-default navbar-btn">Help</a>
+                    <a href="/logout" class="btn btn-default navbar-btn">Log out</a>
+                </div>
+            </div>
+        </nav>
+        <div class="container-fluid" style="margin-top:60px">
+            <div class="row">
+                <div class="col-sm-3" style="padding-top:10px">
+                    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                        <div class="panel panel-default" >
+                            <div class="panel-heading" role="tab" id="headingOne" >
+                                <h4 class="panel-title" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" style="cursor:default">
+                                    AAA
+                                </h4>
+                            </div>
+                            <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                                <div class="panel-body">
+                                    <ul class="nav nav-pills nav-stacked">
+                                        <li><a href="/tacacs/users/users.html">Users</a></li>
+                                        <li><a href="/tacacs/groups/groups.html">Groups</a></li>
+                                        <li><a href="/tacacs/cmd_sets/cmd_sets.html">Command-set</a></li>
+                                        <li><a href="/tacacs/logs/logs.html">Logs</a></li>
+                                        <li><a href="/tacacs/settings/settings.html">Settings</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-9">
+                {% block content %}
+                {% endblock %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Configuração-->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="ApplyConfig">Apply Config</h4>
+                        </div>
+                        <div class="modal-body">
+                        Apply configuration?
+                        </div>
+                        <div class="modal-footer">
+                            <form name='apply_config' method="post" action="/tacacs/index.html">
+                                {% csrf_token %}
+                                <input type="hidden" id="job" name="job" value="apply_config">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Save changes</button>
+                            </form>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </body>
+</html>

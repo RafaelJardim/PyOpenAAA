@@ -1,0 +1,54 @@
+{% extends 'tacacs/header.html' %}
+
+{% block content %}
+
+{% if status == "" %}
+
+    <div class="alert alert-danger" role="alert">
+    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+    <span class="sr-only">Error</span>
+        TACACS process is stopped.
+    </div>
+
+{% endif%}
+
+<h1>AAA Information</h1>
+<table class="table table-hover" cellspacing="0" cellpadding="0">
+<thead>
+    <tr>
+        <th>Category</th>
+        <th>Quantity</th>
+    </tr>
+</thead>
+
+<tbody>
+
+{% for user_count, group_count, cmd_set_count, reg_log_count, reg_cmd_count in statistics %}
+
+    <tr>
+        <td>Users</td>
+        <td width="20px" align="right">{{ user_count }}</td>
+    </tr>
+    <tr>
+        <td>Groups</td>
+        <td width="20px" align="right">{{ group_count }}</td>
+    </tr>
+    <tr>
+        <td>Command-Sets</td>
+        <td width="20px" align="right">{{ cmd_set_count }}</td>
+    </tr>
+    <tr>
+        <td>Registered Logon</td>
+        <td width="20px" align="right">{{ reg_log_count }}</td>
+    </tr>
+    <tr>
+        <td>Registered Commands</td>
+        <td width="20px" align="right">{{ reg_cmd_count }}</td>
+    </tr>
+
+{% endfor %}
+
+</tbody>
+</table>
+
+{% endblock content %}

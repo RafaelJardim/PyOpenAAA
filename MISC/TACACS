@@ -1,0 +1,81 @@
+#!/usr/local/sbin/tac_plus
+
+id = spawnd {
+        listen = { port = 49 }
+}
+
+id = tac_plus {
+
+    date format = "%Y-%m-%d %H:%M:%S"
+
+    accounting log = /var/log/tac_plus/%Y/%m/%d.log
+
+    accounting log = /var/log/tac_plus/account.log
+
+    retire limit = 1000
+
+    password max-attempts = 3
+
+    host = 0.0.0.0/0 {
+        welcome banner = "\tThis Device is Managed by PyOpenAAA.\n\t Please inform your credentials above: "
+        failed authentication banner = "Authentication Failed! Go away"
+        key = pyopenaaa
+    }
+
+   group = operator {
+        default service = permit
+        service = shell {
+        set idletime = 30
+        set timeout = 60
+        set priv-lvl = 15
+        default command = deny
+        cmd = show {
+                permit .*
+       }
+    }
+}
+
+   group = admin {
+        default service = permit
+        service = shell {
+        set idletime = 60
+        set timeout = 120
+        set priv-lvl = 15
+        default command = permit
+        cmd = .* {
+                permit .*
+       }
+    }
+}
+
+   group = NOC {
+        default service = permit
+        service = shell {
+        set idletime = 30
+        set timeout = 60
+        set priv-lvl = 15
+        default command = deny
+        cmd = show {
+                permit clock
+                permit version
+       }
+    }
+}
+
+   user = admin {
+            login = crypt 9J4n44OZ0Yz8Y
+            member = admin
+    }
+
+   user = operator {
+            login = crypt 6Ax77Pki1aeAE
+            member = operator
+    }
+
+   user = NOC {
+            login = crypt DDEnzBZ7ztupk
+            member = NOC
+    }
+
+
+}

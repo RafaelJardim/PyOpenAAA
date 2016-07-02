@@ -1,0 +1,164 @@
+{% extends 'tacacs/header.html' %}
+
+{% block content %}
+
+    <h1>Edit Command Set</h1>
+
+    <div id="error_message"></div>
+    <form name="create_cmd_set" style="max-width:600px" method="post" action="tacacs/cmd_sets/cmd_sets.html"  onsubmit="return validateForm()">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Command Set Name:</label>
+            <p class="form-control-static lead">{{ name }}</p>
+        </div>
+
+        <div class="form-group">
+            <label for="default_action" >Unmatched Commands:</label>
+            {% if default_action == 'permit' %}
+                <select class="form-control" style="width:auto" name="default_action" id="default_action">
+                    <option value="permit" selected>permit</option>
+                    <option value="deny">deny</option>
+                </select>
+            {% else %}
+                <select class="form-control" style="width:auto" name="default_action" id="default_action">
+                    <option value="permit">permit</option>
+                    <option value="deny" selected>deny</option>
+                </select>
+            {% endif %}
+        </div>
+
+        <h2>Commands</h2>
+
+        <table id="commands" class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Permit/Deny</th>
+                    <th>Command</th>
+                    <th>Parameter</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for cmd_set_id, cmd_set_name, cmd_default_action , order, action, cmd, parameter in cmd_list %}
+                <tr>
+                {% if action == 'permit' %}
+                    <td>
+                        <select class="action form-control" name="action_{{ order }}">
+                            <option value="permit" selected>permit</option>
+                            <option value="deny">deny</option>
+                        </select>
+                    </td>
+                {% else %}
+                    <td>
+                        <select class="action form-control" name="action_{{ order }}">
+                            <option value="permit">permit</option>
+                            <option value="deny" selected>deny</option>
+                        </select>
+                    </td>
+                {% endif %}
+                    <td>
+                        <input type="text" class="command form-control" name='command_{{ order }}' placeholder="Put the command here" value='{{ cmd }}' />
+                    </td>
+                    <td>
+                        <input type="text" class="parameter form-control" name='parameter_{{ order }}' placeholder="Put the parameter here" value='{{ parameter }}' />
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-default" aria-label="Delete" onClick="delete_line(this)">
+                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
+                        </button>
+                    </td>
+                    <td>
+                        <input type="hidden" class="order" name="order_{{ order }}" value="{{ order }}" />
+                        <div class="btn btn-default sort-button" aria-label="Sortable">
+                            <span class="glyphicon glyphicon-resize-vertical" aria-hidden="true"></span>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <button type="button" class="btn btn-default" id="add_new_line" aria-label="Add New Line">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New Line
+        </button>
+        <br/><br/><br/>
+            <input type="hidden" id="job" name="job" value="save_cmd_set" />
+            <input type="hidden" id="cmd_set_id" name="cmd_set_id" value="{{ cmd_set_id }}" />
+            <input type="hidden" id="num_lines" name="num_lines" value="1" />
+            <input type="submit" value="Save" class="btn btn-primary" />
+            <input type="button" class="btn btn-default" onClick="parent.location='tacacs/cmd_sets/cmd_sets.html'" value='Cancel'>
+    </form>
+
+    {% load staticfiles %}
+    <script src="{% static 'tacacs/jquery-ui/jquery-ui.min.js' %}"></script>
+    <script>
+        //Sortable
+        $( "#commands tbody" ).sortable({
+            handle: ".sort-button",
+            update:  function( event, ui ) { reorganizeLines() }
+        });
+
+        //Reorganize Lines
+        function reorganizeLines(){
+            $("#commands tbody tr").each(function(i, el) {
+                $(el).find(".action").attr("name","action_"+(i+1));
+                $(el).find(".command").attr("name","command_"+(i+1));
+                $(el).find(".parameter").attr("name","parameter_"+(i+1));
+                $(el).find(".order").attr("name","order_"+(i+1)).val(i+1);
+            });
+            $("#num_lines").val($("#commands tbody tr").length);
+        }
+
+        // Add new line
+        $("#num_lines").val($("#commands tbody tr").length);
+        $("#add_new_line").click(function(){
+            var id = $("#commands tbody tr").length+1;
+            $("#commands tbody").append(
+                '<tr>'+
+                    '<td>'+
+                        '<select class="action form-control" name="action_'+id+'">'+
+                            '<option value="permit">permit</option>'+
+                            '<option value="deny">deny</option>'+
+                        '</select>'+
+                    '</td>'+
+                    '<td>'+
+                        '<input type="text" class="command form-control" name="command_'+id+'" placeholder="Put the command here" />'+
+                    '</td>'+
+                    '<td>'+
+                        '<input type="text" class="parameter form-control" name="parameter_'+id+'" placeholder="Put the parameter here" />'+
+                    '</td>'+
+                    '<td>'+
+                        '<button type="button" class="btn btn-default" aria-label="Delete" onClick="delete_line(this)">'+
+                            '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete'+
+                        '</button>'+
+                    '</td>'+
+                    '<td>'+
+                        '<input type="hidden" class="order" name="order_'+id+'" value="'+id+'" />'+
+                        '<div class="btn btn-default sort-button" aria-label="Sortable">'+
+                            '<span class="glyphicon glyphicon-resize-vertical" aria-hidden="true"></span>'+
+                        '</div>'+
+                    '</td>'+
+                '</tr>'
+            );
+
+            $("#num_lines").val(id);
+        })
+
+        // Delete a line
+        function delete_line(objt){
+            var line = $("#commands tbody tr").index($(objt).parents('tr'));
+            $("#commands tbody tr").eq(line).remove();
+            reorganizeLines();
+        }
+
+        // Validate form
+        function validateForm() {
+            var x = document.forms["create_cmd_set"]["cmd_set_name"].value;
+            if (x == null || x == "") {
+                alert("Command-Set Name must be filled out");
+                return false;
+            }
+        }
+    </script>
+
+{% endblock content %}

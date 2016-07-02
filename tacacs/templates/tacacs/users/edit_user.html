@@ -1,0 +1,38 @@
+{% extends 'tacacs/header.html' %}
+
+{% block content %}
+    <h1>Edit User</h1>
+    <div id="error_message"></div>
+    <form method="post" action="user" style="max-width:600px">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <input type="hidden" name="job" value="save_user"/>
+            <input type='hidden' name='username_edit' value='{{ user_id }}'/>
+            <label>Username:</label>
+            <p class="form-control-static lead">{{ user }}</p>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input class="form-control" name="new_password" id="password" type="password" placeholder="Password">
+        </div>
+
+        <div class="form-group">
+            <label>Group:</label>
+            <select class="form-control" name="new_group" title="Select user group.">
+                {% for group_id, group_name in groups %}
+                    {% if group_id = group %}
+                        <option selected value="{{ group_id }}"> {{ group_name }}</option>
+                    {% else %}
+                        <option value="{{ group_id }}"> {{ group_name }}</option>
+                    {% endif%}
+                {% endfor %}
+            </select>
+        </div>
+
+        <input type="submit" class="btn btn-primary" value="Save">
+        <input type=button class="btn btn-default" onClick="parent.location='/tacacs/users/users.html'" value='Cancel'>
+
+    </form>
+{% endblock content %}

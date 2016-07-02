@@ -1,0 +1,57 @@
+{% extends 'tacacs/header.html' %}
+
+{% block content %}
+    <script>
+      function validateForm() {
+        var x = document.forms["create_user"]["username_add"].value;
+        if (x == null || x == "") {
+            $('#error_message').html('<div id="empty_info" class="alert alert-danger alert-dismissible" role="alert">'+
+                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                'Name must be filled.'+
+            '</div>');
+            return false;
+        }
+
+        var x = document.forms["create_user"]["password_add"].value;
+        if (x == null || x == "") {
+            $('#error_message').html('<div id="empty_info" class="alert alert-danger alert-dismissible" role="alert">'+
+                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                "Blank password isn't safe!"+
+            '</div>');
+            return false;
+        }
+    }
+    </script>
+
+    <h1>Create New User</h1>
+    <div id="error_message"></div>
+    <form name='create_user' style="max-width:600px" method="post" action="/tacacs/users/users.html" onsubmit="return validateForm()">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <input type="hidden" name="job" value="create_user"/>
+            <label for="username" >Username:</label>
+            <input class="form-control" name="username_add" id="username" placeholder="Username">
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input class="form-control" name="password_add" id="password" type="password" placeholder="Password">
+        </div>
+
+        <div class="form-group">
+
+            <label>Group:</label>
+            <select class="form-control" name="group_id" class="input_select" title="Select user group.">
+                {% for group_id, group_name in groups %}
+                <option value="{{ group_id }}">{{ group_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <input type="submit" class="btn btn-primary" value="Create">
+        <input type=button class="btn btn-default" onClick="parent.location='/tacacs/users/users.html'" value='Cancel'>
+
+    </form>
+
+{% endblock content %}
