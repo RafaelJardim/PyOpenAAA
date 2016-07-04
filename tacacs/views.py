@@ -309,8 +309,12 @@ def logs(request):
         if '/tacacs/logs/logs_by_cmd.html' in request.path:
             form = request.POST
 
-            commands = select("""SELECT timestamp, timezone, priv_lvl, cmd
-            FROM account WHERE timestamp BETWEEN '{0}' AND '{1}'""".format(form['login'], form['logout']))
+            if form['logout'] != "":
+                commands = select("""SELECT timestamp, timezone, priv_lvl, cmd
+                FROM account WHERE timestamp BETWEEN '{0}' AND '{1}'""".format(form['login'], form['logout']))
+            else:
+                commands = select("""SELECT timestamp, timezone, priv_lvl, cmd
+                    FROM account WHERE timestamp > '{0}'""".format(form['login']))
 
             return render(request, 'tacacs/logs/logs_by_cmd.html', {'commands': commands})
 
