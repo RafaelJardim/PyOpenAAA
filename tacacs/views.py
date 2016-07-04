@@ -301,7 +301,8 @@ def logs(request):
             server_ip as srv, username as user, tty as term,
             (SELECT timestamp FROM access WHERE timestamp > login AND task_id = task AND start_stop = 'stop'
             AND username = user  AND server_ip = srv AND device_ip = device AND tty = term LIMIT 1) as logout
-            FROM access WHERE start_stop = 'start' AND timestamp BETWEEN '{0} 00:00:00' AND '{1} 23:59:59';"""
+            FROM access WHERE start_stop = 'start' AND timestamp BETWEEN '{0} 00:00:00' AND '{1} 23:59:59'
+            ORDER BY login DESC ;"""
                            .format(form['from_logon'], form['to_logon']))
 
             return render(request, 'tacacs/logs/logs_by_logon.html', {'logon': logon})
@@ -311,10 +312,10 @@ def logs(request):
 
             if form['logout'] != "":
                 commands = select("""SELECT timestamp, timezone, priv_lvl, cmd
-                FROM account WHERE timestamp BETWEEN '{0}' AND '{1}'""".format(form['login'], form['logout']))
+                FROM account WHERE timestamp BETWEEN '{0}' AND '{1}' ORDER BY timestamp DESC;""".format(form['login'], form['logout']))
             else:
                 commands = select("""SELECT timestamp, timezone, priv_lvl, cmd
-                    FROM account WHERE timestamp > '{0}'""".format(form['login']))
+                    FROM account WHERE timestamp > '{0}' ORDER BY timestamp DESC""".format(form['login']))
 
             return render(request, 'tacacs/logs/logs_by_cmd.html', {'commands': commands})
 
