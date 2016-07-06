@@ -290,7 +290,7 @@ def logs(request):
         import_to_database("/var/log/tac_plus/account.log")
 
     except FileNotFoundError:
-        print("Log File Not Found!" )
+        print("Log File Not Found!")
 
     if request.method == 'POST':
 
@@ -299,9 +299,10 @@ def logs(request):
         if '/tacacs/logs/logs_by_logon.html' in request.path:
             logon = select("""SELECT task_id as task, timestamp as login,device_ip as device,
             server_ip as srv, username as user, tty as term,
-            (SELECT timestamp FROM access WHERE task_id = task AND start_stop = 'stop' AND username = user
-            AND server_ip = srv AND device_ip = device AND tty = term) as logout FROM access
-            WHERE start_stop = 'start' AND timestamp BETWEEN '{0} 00:00:00' AND '{1} 23:59:59';"""
+            (SELECT timestamp FROM access WHERE timestamp > login AND task_id = task AND start_stop = 'stop'
+            AND username = user  AND server_ip = srv AND device_ip = device AND tty = term LIMIT 1) as logout
+            FROM access WHERE start_stop = 'start' AND timestamp BETWEEN '{0} 00:00:00' AND '{1} 23:59:59'
+            ORDER BY login DESC ;"""
                            .format(form['from_logon'], form['to_logon']))
 
             return render(request, 'tacacs/logs/logs_by_logon.html', {'logon': logon})
@@ -309,17 +310,22 @@ def logs(request):
         if '/tacacs/logs/logs_by_cmd.html' in request.path:
             form = request.POST
 
-            commands = select("""SELECT timestamp, timezone, priv_lvl, cmd
-            FROM account WHERE timestamp BETWEEN '{0}' AND '{1}'""".format(form['login'], form['logout']))
+            if form['logout'] != "":
+                commands = select("""SELECT timestamp, timezone, priv_lvl, cmd
+                FROM account WHERE timestamp BETWEEN '{0}' AND '{1}' ORDER BY timestamp DESC;"""
+                                  .format(form['login'], form['logout']))
+            else:
+                commands = select("""SELECT timestamp, timezone, priv_lvl, cmd
+                    FROM account WHERE timestamp > '{0}' ORDER BY timestamp DESC""".format(form['login']))
 
             return render(request, 'tacacs/logs/logs_by_cmd.html', {'commands': commands})
 
     else:
-        logon = select("""SELECT timestamp as login, device_ip as device, server_ip as srv,
-        username as usr, tty as term, task_id as task,
-        (SELECT timestamp FROM access WHERE start_stop = 'stop' AND device_ip = device AND server_ip = srv
-        AND username = usr AND task_id = task AND tty = term ) as logout FROM access
-        WHERE start_stop = 'start' ORDER BY login DESC LIMIT 5;""")
+        logon = select("""SELECT  timestamp as login, device_ip as device, server_ip as srv,
+            username as usr, tty as term, task_id as task,
+            (SELECT timestamp FROM access WHERE timestamp > login AND start_stop = 'stop' AND device_ip = device AND
+            server_ip = srv AND username = usr AND task_id = task AND tty = term LIMIT 1 ) as logout FROM access
+            WHERE start_stop = 'start' ORDER BY login DESC LIMIT 5;""")
 
         return render(request, 'tacacs/logs/logs.html', {'logon': logon})
 
