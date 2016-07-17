@@ -1,6 +1,12 @@
 {% extends 'tacacs/header.html' %}
 
 {% block content %}
+<script>
+    function delete_info(item){
+        var confirmation = confirm('Do you really want to delete the command-set "'+item+'", the groups that use it and the users of this groups?');
+        return confirmation;
+    }
+</script>
 <h1>Command-Sets</h1>
 <a href="/tacacs/cmd_sets/create_cmd_set.html" class="btn btn-primary">
 <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Create New Command-Set</a>
@@ -31,7 +37,7 @@
                 </form>
             </td>
             <td style='text-align:center'>
-                <form  method='post' action='/tacacs/cmd_sets/cmd_sets.html'>
+                <form onsubmit="return delete_info('{{ cmd_set_name }}')" method='post' action='/tacacs/cmd_sets/cmd_sets.html'>
                     {% csrf_token %}
                     <input type='hidden' name='job' value='delete_cmd_set'/>
                     <input type='hidden' name='cmd_set_name' value='{{ cmd_set_name }}'/>

@@ -82,6 +82,34 @@ def index(request):
                                                      'status': check_process()})
 
 
+def change_pwd(request):
+
+    message = ""
+
+    if request.method == 'POST':
+
+        form = request.POST
+
+        hash = select("SELECT passwd FROM users WHERE user_name = '{0}'".format(form['username']))
+
+        if hash:
+            hash = hash[0][0]
+            old_pwd = create_tac_pwd(form['password'])
+
+            if old_pwd != hash:
+                message = "invalid"
+
+            elif form['new_password'] != form['new_password_again']:
+                message = "different"
+
+            else:
+                new_pwd = create_tac_pwd(form['new_password'])
+                update("UPDATE users SET passwd = '{0}' WHERE user_name = '{1}'".format(new_pwd, form['username']))
+                message = "success"
+
+    return render(request, 'registration/change_pwd.html', {'message': message})
+
+
 def users(request):
 
     if not request.user.is_authenticated():
@@ -114,7 +142,7 @@ def users(request):
                                                                    'user_id': form['user_id_edit']})
 
         if form['job'] == 'save_user':
-            update("""UPDATE users SET passwd = '{0}', group_id ='{1}'WHERE user_id = '{2}'"""
+            update("""UPDATE users SET passwd = '{0}', group_id ='{1}' WHERE user_id = '{2}'"""
                    .format(create_tac_pwd(form['new_password']), form['new_group'], form['username_edit']))
 
             user_list = select("""SELECT u.user_id, u.user_name, g.group_name
@@ -321,7 +349,7 @@ def logs(request):
             return render(request, 'tacacs/logs/logs_by_cmd.html', {'commands': commands})
 
     else:
-        logon = select("""SELECT  timestamp as login, device_ip as device, server_ip as srv,
+        logon = select("""SELECT timestamp as login, device_ip as device, server_ip as srv,
             username as usr, tty as term, task_id as task,
             (SELECT timestamp FROM access WHERE timestamp > login AND start_stop = 'stop' AND device_ip = device AND
             server_ip = srv AND username = usr AND task_id = task AND tty = term LIMIT 1 ) as logout FROM access
@@ -341,21 +369,30 @@ def settings(request):
 
         form = request.POST
 
-        update("UPDATE settings SET shared_key = '{0}',  login_msg = '{1}', fail_msg = '{2}', custom_config = '{3}'"
-               .format(form['shared_key'], form['login_msg'], form['fail_msg'], form['custom_config']))
+        login_msg = form['login_msg'].replace("\\n", "\\\\n")
+        login_msg = login_msg.replace("\\t", "\\\\t")
+
+        update("UPDATE settings SET shared_key = '{0}',  login_msg = '{1}', fail_msg = '{2}', time_zone = '{3}', "
+               "custom_config = '{4}'".format(form['shared_key'],
+                                              login_msg,
+                                              form['fail_msg'],
+                                              form['time_zone'],
+                                              form['custom_config']))
 
         config = select("SELECT * FROM settings")
 
         return render(request, 'tacacs/settings/settings.html', {'pre_shared_key': config[0][0],
                                                                  'login_msg': config[0][1],
                                                                  'fail_msg': config[0][2],
-                                                                 'custom_config': config[0][3],
+                                                                 'time_zone': config[0][3],
+                                                                 'custom_config': config[0][4],
                                                                  'status': 'save'})
 
     return render(request, 'tacacs/settings/settings.html', {'pre_shared_key': config[0][0],
                                                              'login_msg': config[0][1],
                                                              'fail_msg': config[0][2],
-                                                             'custom_config': config[0][3],
+                                                             'time_zone': config[0][3],
+                                                             'custom_config': config[0][4],
                                                              'status': ''})
 
 

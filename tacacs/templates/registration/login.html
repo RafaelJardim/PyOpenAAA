@@ -52,8 +52,11 @@
                     <input class="form-control" name="password" id="password" type="password" placeholder="Password">
                 </div>
 
-                <input type="submit" value="Login" class="btn btn-primary"/>
-                <input type="hidden" name="next" value="{{ next }}" />
+                <div class="form-group">
+                    <input type="submit" value="Login" class="btn btn-primary"/>
+                    <a class="btn btn-link pull-right" href="change_pwd.html">Change TACACS User Password</a>
+                    <input type="hidden" name="next" value="{{ next }}" />
+                </div>
             </form>
         </div>
     </body>

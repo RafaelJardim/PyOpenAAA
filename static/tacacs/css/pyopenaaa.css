@@ -1,0 +1,33 @@
+html,body{
+    height:100%;
+}
+
+.content{
+    height:100%;
+    padding-top:50px;
+    box-sizing:border-box;
+}
+
+.content>.row{
+    height:100%;
+}
+
+.side-menu, .content-block{
+    padding-top:20px;
+    box-sizing:border-box;
+    overflow:auto;
+}
+
+@media (min-width: 768px) {
+    .side-menu, .content-block{
+        height:100%;
+    }
+}
+
+h1{
+    margin-top:0;
+}
+
+.content-block img{
+    max-width:100%;
+}

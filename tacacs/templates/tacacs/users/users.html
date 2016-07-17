@@ -1,6 +1,13 @@
 {% extends 'tacacs/header.html' %}
 
 {% block content %}
+             <script>
+                function delete_info(item){
+                    var confirmation = confirm('Do you really want to delete the user "'+item+'"?');
+                    return confirmation;
+                }
+            </script>
+
             <h1>Users</h1>
             <a href="/tacacs/users/create_user.html" class="btn btn-primary">
             <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Create New User</a>
@@ -30,7 +37,7 @@
                             </form>
                         </td>
                         <td style='text-align:center'>
-                            <form  method='post' action='/users/user.html'>
+                            <form onsubmit="return delete_info('{{ user_name }}')" method='post' action='/users/user.html'>
                                 {% csrf_token %}
                                 <input type='hidden' name='job' value='delete_user'/>
                                 <input type='hidden' name='user_id_del' value='{{ user_id }}'/>

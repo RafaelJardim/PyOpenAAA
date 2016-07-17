@@ -3,8 +3,7 @@ from .mysql import *
 
 def create_cmd_set(var1):
     cmd = select("""SELECT cs.cmd_set_name, c.action, c.cmd, c.parameter,
-    cs.cmd_default_action, cs.cmd_set_id
-    FROM cmds c INNER JOIN cmd_sets cs ON c.cmd_set_id = cs.cmd_set_id
+    cs.cmd_default_action, cs.cmd_set_id FROM cmds c INNER JOIN cmd_sets cs ON c.cmd_set_id = cs.cmd_set_id
     WHERE c.cmd_set_id = '{0}'""".format(var1))
 
     cmd_set_name = []
@@ -55,7 +54,8 @@ def create_config_file():
     settings = select("""SELECT * FROM settings""")
 
     groups = select("""SELECT g.group_name, g.idle_time, g.timeout,
-    g.priv_lvl, cs.cmd_default_action, cs.cmd_set_id FROM groups g INNER JOIN cmd_sets cs ON g.cmd_set_id = cs.cmd_set_id""")
+    g.priv_lvl, cs.cmd_default_action, cs.cmd_set_id FROM groups g
+    INNER JOIN cmd_sets cs ON g.cmd_set_id = cs.cmd_set_id""")
 
     users = select("""SELECT u.user_name, u.passwd, g.group_name
     FROM users u INNER JOIN groups g ON u.group_id = g.group_id""")
@@ -65,6 +65,8 @@ def create_config_file():
 }}
 
 id = tac_plus {{
+
+    time zone = {0}
 
     date format = "%Y-%m-%d %H:%M:%S"
 
@@ -77,11 +79,11 @@ id = tac_plus {{
     password max-attempts = 3
 
     host = 0.0.0.0/0 {{
-        welcome banner = "{0}"
-        failed authentication banner = "{1}"
-        key = {2}
+        welcome banner = "{1}"
+        failed authentication banner = "{2}"
+        key = {3}
     }}\n
-""".format(settings[0][1], settings[0][2], settings[0][0])
+""".format(settings[0][3], settings[0][1], settings[0][2], settings[0][0])
 
     for row in groups:
         config += """   group = {0} {{
@@ -101,6 +103,8 @@ id = tac_plus {{
             member = {2}
     }}\n\n""".format(row[0], row[1], row[2])
 
-    config += "\n}"
+    config += settings[0][4]
+
+    config += "\n}\n"
 
     return config

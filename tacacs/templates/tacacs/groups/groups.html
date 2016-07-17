@@ -1,56 +1,65 @@
 {% extends 'tacacs/header.html' %}
 
 {% block content %}
+     <script>
+        function delete_info(item){
+            var confirmation = confirm('Do you really want to delete the group "'+item+'" and its users?');
+            return confirmation;
+        }
+    </script>
+
     <h1>Groups</h1>
     <a href="/tacacs/groups/create_group.html" class="btn btn-primary">
     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Create New Group</a>
     </br></br>
-    <table class="table table-rover" cellspacing="0" cellpadding="0">
-        <thead>
-            <tr>
-                <th>Group</th>
-                <th>Privilege-Level</th>
-                <th>Idle-Time</th>
-                <th>Timeout</th>
-                <th>Command-Set</th>
-                <th style='text-align:center'>Edit</th>
-                <th style='text-align:center'>Delete</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for group_id, group_name, priv_lvl, idle_time, timeout ,cmd_set_name in group_list %}
-            <tr>
-                <td>{{ group_name }}</td>
-                <td>{{ priv_lvl }}</td>
-                <td>{{ idle_time }}</td>
-                <td>{{ timeout }}</td>
-                <td>{{ cmd_set_name }}</td>
-                <td td style='text-align:center'>
-                    <form  method='post' action='/tacacs/groups/edit_group.html'>
-                        {% csrf_token %}
-                        <input type='hidden' name='job' value='edit_group'/>
-                        <input type='hidden' name='group_id' value='{{ group_id }}'/>
-                        <input type='hidden' name='priv_lvl' value='{{ priv_lvl }}'/>
-                        <input type='hidden' name='idle_time' value='{{ idle_time }}'/>
-                        <input type='hidden' name='cmd_set_name' value='{{ cmd_set_name }}'/>
-                        <button type="submit" class="btn btn-default" aria-label="Edit">
-                            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Edit
-                        </button>
-                    </form>
-                </td>
+    <div class="table-responsive">
+        <table class="table table-rover" cellspacing="0" cellpadding="0">
+            <thead>
+                <tr>
+                    <th>Group</th>
+                    <th>Privilege-Level</th>
+                    <th>Idle-Time</th>
+                    <th>Timeout</th>
+                    <th>Command-Set</th>
+                    <th style='text-align:center'>Edit</th>
+                    <th style='text-align:center'>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for group_id, group_name, priv_lvl, idle_time, timeout ,cmd_set_name in group_list %}
+                <tr>
+                    <td>{{ group_name }}</td>
+                    <td>{{ priv_lvl }}</td>
+                    <td>{{ idle_time }}</td>
+                    <td>{{ timeout }}</td>
+                    <td>{{ cmd_set_name }}</td>
+                    <td td style='text-align:center'>
+                        <form  method='post' action='/tacacs/groups/edit_group.html'>
+                            {% csrf_token %}
+                            <input type='hidden' name='job' value='edit_group'/>
+                            <input type='hidden' name='group_id' value='{{ group_id }}'/>
+                            <input type='hidden' name='priv_lvl' value='{{ priv_lvl }}'/>
+                            <input type='hidden' name='idle_time' value='{{ idle_time }}'/>
+                            <input type='hidden' name='cmd_set_name' value='{{ cmd_set_name }}'/>
+                            <button type="submit" class="btn btn-default" aria-label="Edit">
+                                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Edit
+                            </button>
+                        </form>
+                    </td>
 
-                <td td style='text-align:center'>
-                    <form  method='post' action='/tacacs/groups/groups.html'>
-                        {% csrf_token %}
-                        <input type='hidden' name='job' value='delete_group'/>
-                        <input type='hidden' name='group_del' value='{{ group_id }}'/>
-                        <button type="submit" class="btn btn-default" aria-label="Delete">
-                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                    <td td style='text-align:center'>
+                        <form onsubmit="return delete_info('{{ group_name }}')" method='post' action='/tacacs/groups/groups.html'>
+                            {% csrf_token %}
+                            <input type='hidden' name='job' value='delete_group'/>
+                            <input type='hidden' name='group_del' value='{{ group_id }}'/>
+                            <button type="submit" class="btn btn-default" aria-label="Delete">
+                                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock content %}

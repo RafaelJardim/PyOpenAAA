@@ -1,0 +1,122 @@
+<!doctype html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>PyOpenAAA</title>
+        {% load staticfiles %}
+        <link type="text/css" rel="stylesheet" href="{% static 'tacacs/css/bootstrap.min.css' %}"/>
+        <link type="image/x-icon" rel="icon" href="{% static 'tacacs/img/favicon.ico' %}" />
+        <style>
+            .box-login{ max-width:400px; width:80%; margin:50px auto; background:#eee; border:1px solid #ddd; border-radius:5px; padding:20px; }
+            .brand-login{ width:100%; text-align:center; margin-bottom:20px; }
+            .brand-login img{ max-width:100%; max-height:60px; margin:0 auto; }
+        </style>
+        <script type="text/javascript" src="{% static 'tacacs/js/jquery.js' %}"></script>
+        <script type="text/javascript" src="{% static 'tacacs/js/bootstrap.min.js' %}"></script>
+        <script>
+          function validateForm() {
+            var x = document.forms["change_pwd"]["username"].value;
+            if (x == null || x == "") {
+                $('#error_message').html('<div id="empty_info" class="alert alert-danger alert-dismissible" role="alert">'+
+                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                    'Invalid Credential.'+
+                '</div>');
+                return false;
+            }
+
+            var x = document.forms["change_pwd"]["password"].value;
+            if (x == null || x == "") {
+                $('#error_message').html('<div id="empty_info" class="alert alert-danger alert-dismissible" role="alert">'+
+                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                    'Invalid Credential.'+
+                '</div>');
+                return false;
+            }
+
+            var x = document.forms["change_pwd"]["new_password"].value;
+            if (x == null || x == "") {
+                $('#error_message').html('<div id="empty_info" class="alert alert-danger alert-dismissible" role="alert">'+
+                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                    "Blank password isn't safe!"+
+                '</div>');
+                return false;
+            }
+
+            var x = document.forms["change_pwd"]["new_password_again"].value;
+            if (x == null || x == "") {
+                $('#error_message').html('<div id="empty_info" class="alert alert-danger alert-dismissible" role="alert">'+
+                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                    "Blank password isn't safe!"+
+                '</div>');
+                return false;
+            }
+        }
+        </script>
+    </head>
+    <body>
+        <div class="box-login">
+            <div class="brand-login">
+                <img alt="Brand" src="{% static 'tacacs/img/PyOpenAAA.png' %}">
+            </div>
+
+                {% if message == 'invalid' %}
+
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span class="sr-only">Error</span>
+                    Invalid Credential. Please try again.
+                </div>
+
+                {% elif message == 'different' %}
+
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span class="sr-only">Error</span>
+                    New Passwords are different.
+                </div>
+
+                {% elif message == 'success' %}
+
+                <div class="alert alert-info alert-dismissible" role="alert">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span class="sr-only">Error</span>
+                    Password Updated. Contact your System Admin to Restart the Service.
+                </div>
+
+                {% endif%}
+
+            <div id="error_message"></div>
+
+            <form name="change_pwd" method="post" action="change_pwd.html" onsubmit="return validateForm()">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input type="hidden" name="job" value="create_user"/>
+                    <label for="username" >Username:</label>
+                    <input class="form-control" name="username" id="username" placeholder="Username">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Current Password:</label>
+                    <input class="form-control" name="password" id="password" type="password" placeholder="Password">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">New Password:</label>
+                    <input class="form-control" name="new_password" id="new_password" type="password" placeholder="New Password">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">New Password (Again):</label>
+                    <input class="form-control" name="new_password_again" id="new_password_again" type="password" placeholder="New Password">
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Update" class="btn btn-primary"/>
+                    <input type=button class="btn btn-default" onClick="parent.location='/'" value='Back'>
+                    <input type="hidden" name="next" value="{{ next }}" />
+                </div>
+            </form>
+        </div>
+    </body>
+</html>

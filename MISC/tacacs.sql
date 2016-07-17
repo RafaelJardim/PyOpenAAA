@@ -161,9 +161,10 @@ DROP TABLE IF EXISTS `settings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `settings` (
-  `shared_key` varchar(45) CHARACTER SET utf8 NOT NULL,
-  `login_msg` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `shared_key` varchar(45) COLLATE utf8_bin NOT NULL,
+  `login_msg` varchar(255) COLLATE utf8_bin NOT NULL,
   `fail_msg` varchar(255) COLLATE utf8_bin NOT NULL,
+  `time_zone` varchar(45) COLLATE utf8_bin NOT NULL,
   `custom_config` longtext COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`shared_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
@@ -175,7 +176,7 @@ CREATE TABLE `settings` (
 
 LOCK TABLES `settings` WRITE;
 /*!40000 ALTER TABLE `settings` DISABLE KEYS */;
-INSERT INTO `settings` VALUES ('pyopenaaa','This Device is Managed by PyOpenAAA. Please inform your credentials:','Authentication Failed.','');
+INSERT INTO `settings` VALUES ('pyopenaaa','This Device is Managed by PyOpenAAA. Please inform your credentials:\\n','Authentication Failed.','UTC-0','');
 /*!40000 ALTER TABLE `settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -204,7 +205,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'admin','kaF9AVO3pk7oQ',1),(2,'operator','JLcjQf85AApwc',2);
+INSERT INTO `users` VALUES (1,'admin','$1$PyOpenAA$1Yy59TbXrsAH8Y0AmrfLk/',1),(2,'operator','$1$PyOpenAA$PPIVpm9mwOA1NA8kY1mev.',2);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
