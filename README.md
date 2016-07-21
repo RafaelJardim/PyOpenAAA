@@ -29,7 +29,7 @@ The follow commands must be used with root user or privileged user:
     cd /usr/src/
     
     # It's recommend to check if a new version of tac_plus is availible on http://www.pro-bono-publico.de
-    wget http://www.pro-bono-publico.de/projects/src/DEVEL.201606121104.tar.bz2
+    wget http://www.pro-bono-publico.de/projects/src/DEVEL.201607131940.tar.bz2
 
     # Decompress bzip2 file
     bzip2 -d DEVEL.201606121104.tar.bz2
