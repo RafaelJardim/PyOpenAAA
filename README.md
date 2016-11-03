@@ -35,7 +35,7 @@ The follow commands must be used with root user or privileged user:
     bzip2 -d DEVEL.201610291635.tar.bz2
 
     # Decompress tar file
-    tar xf DEVEL.201606121104.tar
+    tar xf DEVEL.201610291635.tar
 
     cd PROJECTS
 
