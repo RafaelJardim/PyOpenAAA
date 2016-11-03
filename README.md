@@ -1,6 +1,6 @@
 # PyOpenAAA
 
-This system was developed and tested on Debian 8.5 (Netinstall) for amd64. You can obtain Debian last version at http://cdimage.debian.org/debian-cd (http://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-8.5.0-amd64-netinst.iso in my case)
+This system was developed and tested on Debian 8.6 (Netinstall) for amd64. You can obtain Debian last version at http://cdimage.debian.org/debian-cd (http://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-8.6.0-amd64-netinst.iso in my case)
 
 ## Pre-requirements
 
@@ -29,10 +29,10 @@ The follow commands must be used with root user or privileged user:
     cd /usr/src/
     
     # It's recommend to check if a new version of tac_plus is availible on http://www.pro-bono-publico.de
-    wget http://www.pro-bono-publico.de/projects/src/DEVEL.201607131940.tar.bz2
+    wget http://www.pro-bono-publico.de/projects/src/DEVEL.201610291635.tar.bz2
 
     # Decompress bzip2 file
-    bzip2 -d DEVEL.201606121104.tar.bz2
+    bzip2 -d DEVEL.201610291635.tar.bz2
 
     # Decompress tar file
     tar xf DEVEL.201606121104.tar
